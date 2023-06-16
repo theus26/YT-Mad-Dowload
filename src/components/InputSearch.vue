@@ -1,10 +1,10 @@
 <template>
   <div class="container mx-auto  w-full">
     <div class="flex ...">
-      <div class="w-5/6 ..."><input v-model="Link" type="search" :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
+      <div class="w-5/6 ..."><input @input="checkInput" v-model="Link" type="search" :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
           class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-none w-full	" /> </div>
           <div class="w-1/6 ...">
-            <button @click="GetVideoUrl" class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500">
+            <button @click="GetVideoUrl" class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500" :class="{ 'cursor-not-allowed': !Link,'cursor-pointer': Link}" :disabled="!inputValue" >
               <span class="icon" v-html="svgIcon"></span>
             </button>
           </div>
