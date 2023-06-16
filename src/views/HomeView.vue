@@ -1,18 +1,35 @@
 <template>
   <div class="home">
-  
-    <HelloWorld />
+    <Header />
+
+    <Menu />
+    <br>
+    <br>
+    
+    <InputSearch />
+    <Information />
+ 
+
+    <Footer />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
+import InputSearch from '@/components/InputSearch.vue';
+import Information from '@/components/Information.vue';
+import Menu from '@/components/Menu.vue';
 
 export default {
   name: 'HomeView',
   components: {
-    HelloWorld
+    Header,
+    Footer,
+    InputSearch,
+    Information,
+    Menu
   }
 }
 </script>
