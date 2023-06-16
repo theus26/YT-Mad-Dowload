@@ -5,10 +5,12 @@
     <Menu />
     <br>
     <br>
-    
+
     <InputSearch />
     <Information />
- 
+    
+
+
 
     <Footer />
   </div>
@@ -22,6 +24,8 @@ import InputSearch from '@/components/InputSearch.vue';
 import Information from '@/components/Information.vue';
 import Menu from '@/components/Menu.vue';
 
+
+
 export default {
   name: 'HomeView',
   components: {
@@ -29,7 +33,7 @@ export default {
     Footer,
     InputSearch,
     Information,
-    Menu
-  }
+    Menu,
+}
 }
 </script>
