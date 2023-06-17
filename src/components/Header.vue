@@ -8,7 +8,7 @@
 
 <style scoped>
 img {
-    width: 170px;
-    height: 170px;
+    width: 150px;
+    height: 150px;
 }
 </style>
