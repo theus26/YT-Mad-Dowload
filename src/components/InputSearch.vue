@@ -47,8 +47,8 @@
             <div class="grid grid-rows-1">
               <div class="flex justify-center gap-3">
                 <div v-for="(item, index) in container" :key="index"
-                  class="p-4 bg-gray-200 cursor-pointer rounded hover:bg-gray-500" :class="{ 'selected': isSelected(item) }"
-                  @click="toggleSelection(item)">
+                  class="p-4 bg-gray-200 cursor-pointer rounded hover:bg-gray-500"
+                  :class="{ 'selected': isSelected(item) }" @click="toggleSelection(item)">
                   {{ item }}
                 </div>
 
@@ -57,8 +57,8 @@
             <div class="grid grid-rows-1">
               <div class="flex gap-3">
                 <div v-for="(item, index) in resolution" :key="index"
-                  class="p-4 bg-gray-200 cursor-pointer rounded  hover:bg-gray-500" :class="{ 'selected': isSelected(item) }"
-                  @click="toggleSelection1(item)">
+                  class="p-4 bg-gray-200 cursor-pointer rounded  hover:bg-gray-500"
+                  :class="{ 'selected': isSelected(item) }" @click="toggleSelection1(item)">
                   {{ item }}p
                 </div>
 
@@ -90,7 +90,7 @@ export default {
       resolution: [],
       objAudio: [],
       show: false,
-      text:false,
+      text: false,
       selectedItems: [],
       videoUrl: '',
       svgIcon: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z\" /></svg>",
@@ -104,7 +104,7 @@ export default {
       const url = this.Link.replace("watch?v=", "embed/")
       console.log(url)
       const result = await GetVideoUrl(url)
-      
+
 
       if (result.status === 200) {
         this.videoUrl = url
@@ -113,16 +113,20 @@ export default {
         // Filtrar apenas os objetos do tipo "mixed"
         const objMixed = this.obj = result.data.quality.filter(mixed => mixed.type === 'Mixed');
         this.objVideo = objMixed
-        // Filtrar apenas os objetos do tipo "mixed"
+        // Filtrar apenas os objetos do tipo "audio"
         const objAudios = this.obj = result.data.quality.filter(mixaudio => mixaudio.type === 'Audio');
         this.objAudio = objAudios
         const arr = result.data;
         //Receber Titulo do video
         this.title = arr.title;
-       
+
       }
       else {
-        console.log("Erro intero no servidor")
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Não Foi possivel'
+        })
       }
     },
 
@@ -153,7 +157,7 @@ export default {
       }
       const a = this.cont = this.selectedItems[0];
 
-      
+
 
     },
 
@@ -166,7 +170,7 @@ export default {
 
       const b = this.res = this.selectedItems[1];
 
-      
+
     }
 
   }
