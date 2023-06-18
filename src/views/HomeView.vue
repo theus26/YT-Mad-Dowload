@@ -6,8 +6,8 @@
     <br>
     <br>
 
-    <InputSearch />
     <Information />
+    <InputSearch />
     
 
 
