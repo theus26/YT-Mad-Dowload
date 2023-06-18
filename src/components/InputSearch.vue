@@ -111,7 +111,7 @@ export default {
       console.log("Video")
       const container = this.objVideo.map(cont => cont.container)
       const resolution = this.objVideo.map(res => res.resolution)
-      this.container = container
+      this.container = container.filter((i, index) => container.indexOf(i) === index)
       this.resolution = resolution
       console.log(container)
       console.log(resolution)
