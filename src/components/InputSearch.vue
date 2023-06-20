@@ -16,10 +16,12 @@
   </div>
 
 
-  <div class="container mx-auto  w-full">
+  <div class="container mx-auto  w-full mb-8">
     <div class="flex">
       <div class="w-1/2">
         <iframe :src="videoUrl" width="560" height="315" frameborder="0" allowfullscreen class="py-3 mb-1"></iframe>
+        <p v-show="textInformation" class="text-left py-2"><strong>Como Realizar o Dowload?</strong> <br> Clique nos três
+          pontinhos e aperte em baixar</p>
       </div>
 
       <div class="w-1.9">
@@ -61,10 +63,10 @@
                   :class="{ 'selected': isSelected(item) }" @click="toggleSelection1(item)">
                   {{ item }}p
                 </div>
-
               </div>
-
             </div>
+
+
           </div>
         </div>
       </div>
@@ -74,15 +76,22 @@
 
 <script>
 import { GetVideoUrl } from '@/services/api';
+import { GetVideoInfoUrl } from '@/services/api';
+
 
 export default {
+  components: {
+
+  },
   data() {
     return {
       placeholderText: "Cole o Link do seu video aqui!",
       extraText: "https://www.youtube.com/watch?v=gNBKvpAPMUI&list",
       Link: "",
       title: '',
+      textInformation: false,
       cont: '',
+      option: '',
       res: '',
       obj: [],
       objVideo: [],
@@ -120,6 +129,7 @@ export default {
         //Receber Titulo do video
         this.title = arr.title;
 
+
       }
       else {
         this.$swal({
@@ -131,7 +141,7 @@ export default {
     },
 
     VideoCont() {
-      console.log("Video")
+      this.option = 'Mixed'
       const container = this.objVideo.map(cont => cont.container)
       const resolution = this.objVideo.map(res => res.resolution)
       this.container = container.filter((i, index) => container.indexOf(i) === index)
@@ -139,7 +149,7 @@ export default {
 
     },
     AudioCont() {
-      console.log("Audio")
+      this.option = 'Audio'
       const container = this.objAudio.map(cont => cont.container)
       const bitRate = this.objAudio.map(bit => bit.bitrate)
       this.container = container.filter((i, index) => container.indexOf(i) === index)
@@ -156,12 +166,10 @@ export default {
         this.selectedItems.push(item);
       }
       const a = this.cont = this.selectedItems[0];
-
-
-
+     
     },
 
-    toggleSelection1(item) {
+    async toggleSelection1(item) {
       if (this.isSelected(item)) {
         this.selectedItems = this.selectedItems.filter(i => i !== item);
       } else {
@@ -169,11 +177,31 @@ export default {
       }
 
       const b = this.res = this.selectedItems[1];
+      
 
+      const RequestInfo = await GetVideoInfoUrl(this.Link)
+      if (RequestInfo.status === 200) {
+        
+        if (this.option == 'Mixed') {
+          const ba = RequestInfo.data.quality.filter(inf => inf.type === 'Mixed' && inf.container === this.cont && inf.resolution === this.res)
+          const c = ba[0].url
+          
+          this.videoUrl = c
+          this.textInformation = true
+        }
+        else if (this.option == 'Audio') {
+          const ba = RequestInfo.data.quality.filter(inf => inf.type === 'Audio' && inf.container === this.cont && inf.bitrate === this.res)
+          const c = ba[0].url
+         
+          this.videoUrl = c
+          this.textInformation = true
+        }
 
-    }
+      }
 
-  }
+    },
+
+  },
 };
 </script>
 

@@ -14,3 +14,14 @@ export const GetVideoUrl = async (url) =>{
         return {code: 400}
     })
 }
+
+export const GetVideoInfoUrl = async (url) =>{
+    return api.get('Ytmad/VideoInfo?url=' + url ).then(result =>{
+        return result
+    })
+
+    .catch(e => {
+        console.error(e)
+        return {code: 400}
+    })
+}

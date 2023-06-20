@@ -11,6 +11,7 @@
     "autoprefixer": "^10",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
+    "filepond": "^4.30.4",
     "postcss": "^8",
     "sweetalert2": "^11.7.12",
     "tailwindcss": "^3",
