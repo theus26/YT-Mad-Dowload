@@ -78,40 +78,38 @@
 import { GetVideoUrl } from '@/services/api';
 import { GetVideoInfoUrl } from '@/services/api';
 
-
 export default {
   components: {
 
   },
   data() {
     return {
-      placeholderText: "Cole o Link do seu video aqui!",
-      extraText: "https://www.youtube.com/watch?v=gNBKvpAPMUI&list",
       Link: "",
       title: '',
-      textInformation: false,
       cont: '',
+      videoUrl: '',
       option: '',
       res: '',
+      placeholderText: "Cole o Link do seu video aqui!",
+      extraText: "https://www.youtube.com/watch?v=gNBKvpAPMUI&list",
+      svgIcon: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z\" /></svg>",
+      svgVideo: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" d=\"M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z\" /></svg>",
+      svgAudio: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"\ /></svg>',
       obj: [],
       objVideo: [],
       container: [],
       resolution: [],
       objAudio: [],
+      selectedItems: [],
+      textInformation: false,
       show: false,
       text: false,
-      selectedItems: [],
-      videoUrl: '',
-      svgIcon: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z\" /></svg>",
-      svgVideo: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" d=\"M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z\" /></svg>",
-      svgAudio: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"\ /></svg>'
     };
   },
   methods: {
     async GetVideoUrl() {
       //Alterar Url
       const url = this.Link.replace("watch?v=", "embed/")
-      console.log(url)
       const result = await GetVideoUrl(url)
 
 
@@ -157,16 +155,20 @@ export default {
     },
 
     isSelected(item) {
+      
       return this.selectedItems.includes(item);
     },
     toggleSelection(item) {
       if (this.isSelected(item)) {
-        this.selectedItems = this.selectedItems.filter(i => i !== item);
+       
+        const a = this.selectedItems = this.selectedItems.filter(i => i !== item);
+        console.log(a)
       } else {
-        this.selectedItems.push(item);
+       
+        const b = this.selectedItems.push(item);
       }
       const a = this.cont = this.selectedItems[0];
-     
+
     },
 
     async toggleSelection1(item) {
@@ -177,26 +179,45 @@ export default {
       }
 
       const b = this.res = this.selectedItems[1];
-      
+
 
       const RequestInfo = await GetVideoInfoUrl(this.Link)
       if (RequestInfo.status === 200) {
-        
+
         if (this.option == 'Mixed') {
-          const ba = RequestInfo.data.quality.filter(inf => inf.type === 'Mixed' && inf.container === this.cont && inf.resolution === this.res)
-          const c = ba[0].url
-          
-          this.videoUrl = c
-          this.textInformation = true
+          const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Mixed' && inf.container === this.cont && inf.resolution === this.res)
+
+          if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
+            return this.$swal({
+              icon: 'error',
+              title: 'Oops...',
+              text: `Opção Invalida, ${this.cont ? this.cont : ''}, para ${this.res ? this.res : 'essa opção'}p  tente outra`
+            })
+          } else {
+            const result = filterOptions[0].url
+            this.videoUrl = result
+            this.textInformation = true
+
+          }
         }
         else if (this.option == 'Audio') {
-          const ba = RequestInfo.data.quality.filter(inf => inf.type === 'Audio' && inf.container === this.cont && inf.bitrate === this.res)
-          const c = ba[0].url
-         
-          this.videoUrl = c
-          this.textInformation = true
+          const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Audio' && inf.container === this.cont && inf.bitrate === this.res)
+          if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
+            return this.$swal({
+              icon: 'error',
+              title: 'Oops...',
+              text: `Opção Invalida, ${this.cont ? this.cont : ''}, para ${this.res ? this.res : 'essa opção'}  tente outra`
+            })
+          } else {
+            const result = filterOptions[0].url
+            this.videoUrl = result
+            this.textInformation = true
+
+          }
         }
 
+      }else{
+        console.error("Error")
       }
 
     },
