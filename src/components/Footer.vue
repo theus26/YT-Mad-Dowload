@@ -9,7 +9,7 @@
 
 <style scoped>
 .container-footer{
-    position: relative;
+    position: sticky;
     bottom: 0;
     right: 0;
     left: 0;
