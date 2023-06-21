@@ -9,11 +9,10 @@
 
 <style scoped>
 .container-footer{
-    position: sticky;
-    top:0;
-    bottom: 0;
-    right: 0;
+    position: fixed;
     left: 0;
+    bottom: 0;
+    width: 100%;
     border-color: #8080F1;
 }
 
