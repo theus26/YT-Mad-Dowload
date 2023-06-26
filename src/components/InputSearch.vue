@@ -177,8 +177,7 @@ export default {
     toggleSelection(item) {
       if (this.isSelected(item)) {
        
-        const a = this.selectedItems = this.selectedItems.filter(i => i !== item);
-        console.log(a)
+        this.selectedItems = this.selectedItems.filter(i => i !== item);
       } else {
        
         const b = this.selectedItems.push(item);
@@ -188,16 +187,20 @@ export default {
     },
 
     async toggleSelection1(item) {
+   
       if (this.isSelected(item)) {
         this.selectedItems = this.selectedItems.filter(i => i !== item);
+        this.load = false
       } else {
         this.selectedItems.push(item);
+        
       }
 
       const b = this.res = this.selectedItems[1];
 
 
       const RequestInfo = await GetVideoInfoUrl(this.Link)
+      this.load = true
       if (RequestInfo.status === 200) {
 
         if (this.option == 'Mixed') {
@@ -231,9 +234,10 @@ export default {
 
           }
         }
-
+        this.load = false
       }else{
         console.error("Error")
+        this.load = false
       }
 
     },
