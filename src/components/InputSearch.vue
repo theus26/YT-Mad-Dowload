@@ -2,19 +2,20 @@
   <div class="container mx-auto  w-full">
     <div class="flex ...">
       <div class="w-5/6 ..."><input v-model="Link" type="search"
-          :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
-          class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
+        :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
+        class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
       </div>
       <div class="w-1/6 ...">
         <button @click="GetVideoUrl"
-          class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
-          :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
-          <span class="icon" v-html="svgIcon"></span>
-        </button>
-      </div>
+        class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
+        :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
+        <span class="icon" v-html="svgIcon"></span>
+      </button>
     </div>
   </div>
+</div>
 
+  <Loading v-show="load" />
 
   <div class="container mx-auto  w-full mb-8">
     <div class="flex">
@@ -77,10 +78,10 @@
 <script>
 import { GetVideoUrl } from '@/services/api';
 import { GetVideoInfoUrl } from '@/services/api';
-
+import Loading from '@/components/shared/Loading.vue'
 export default {
   components: {
-
+    Loading
   },
   data() {
     return {
@@ -102,40 +103,55 @@ export default {
       objAudio: [],
       selectedItems: [],
       textInformation: false,
+      load:false,
       show: false,
       text: false,
     };
   },
   methods: {
     async GetVideoUrl() {
+      this.load = true
       //Alterar Url
       const url = this.Link.replace("watch?v=", "embed/")
-      const result = await GetVideoUrl(url)
+      //Valida Url
+      const regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
+      const match = url.match(regex);
+      if (match){
+        //Realizar a request
+        const result = await GetVideoUrl(url)
 
-
-      if (result.status === 200) {
-        this.videoUrl = url
-        this.show = true
-        this.text = true
-        // Filtrar apenas os objetos do tipo "mixed"
-        const objMixed = this.obj = result.data.quality.filter(mixed => mixed.type === 'Mixed');
-        this.objVideo = objMixed
-        // Filtrar apenas os objetos do tipo "audio"
-        const objAudios = this.obj = result.data.quality.filter(mixaudio => mixaudio.type === 'Audio');
-        this.objAudio = objAudios
-        const arr = result.data;
-        //Receber Titulo do video
-        this.title = arr.title;
-
-
+        if (result.status === 200) {
+          this.videoUrl = url
+          this.show = true
+          this.text = true
+          // Filtrar apenas os objetos do tipo "mixed"
+          const objMixed = this.obj = result.data.quality.filter(mixed => mixed.type === 'Mixed');
+          this.objVideo = objMixed
+          // Filtrar apenas os objetos do tipo "audio"
+          const objAudios = this.obj = result.data.quality.filter(mixaudio => mixaudio.type === 'Audio');
+          this.objAudio = objAudios
+          const arr = result.data;
+          //Receber Titulo do video
+          this.title = arr.title;
+          this.load = false
+        }
+        else {
+          this.$swal({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Não Foi possivel'
+          })
+          this.load = false
+        }
       }
       else {
-        this.$swal({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Não Foi possivel'
-        })
-      }
+          this.$swal({
+            icon: 'error',
+            title: 'Oops...',
+            text: `Url ${this.Link}, Inválida, Tente Novamente!`
+          })
+          this.load = false
+        }
     },
 
     VideoCont() {
