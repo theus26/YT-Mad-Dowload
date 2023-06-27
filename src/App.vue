@@ -1,30 +1,54 @@
 <template>
-  
-  <router-view/>
+  <main class="bg-white dark:bg-slate-700">
+    <div class="flex justify-end py-1 px-10">
+      <p class="dark:text-white mt-3 px-2 text-base font-medium tracking-tight">Dark Mode</p>
+      <input class="DarkCheckbox" type="checkbox" v-model="isDark" />
+    </div>
+    <router-view/>
+  </main>
   
 </template>
 
-<style>
+<script setup>
+import { useDark } from '@vueuse/core';
+const isDark = useDark();
+
+</script>
+
+<style >
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
+
+
+.DarkCheckbox{
+  width: 80px;
+  height: 40px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: green;
+  outline: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  margin-bottom: -80px;
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.DarkCheckbox::before{
+  content: "";
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  transition: 0.5s;
 }
-
-nav a.router-link-exact-active {
-  color: #42b983;
+.DarkCheckbox:checked::before{
+  transform: translateX(100%);
+  background: #fff;
 }
-
   
 </style>

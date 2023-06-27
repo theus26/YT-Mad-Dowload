@@ -1,6 +1,6 @@
 <template>
     <!-- component -->
-    <div class="h-screen bg-white">
+    <div class="h-screen bg-white dark:bg-slate-700">
         <div class="flex justify-center items-start h-full py-8">
             <img class="h-16 w-16" src="https://icons8.com/preloaders/preloaders/1488/Iphone-spinner-2.gif" alt="">
         </div>

@@ -1,11 +1,8 @@
 <template>
-    <div class="flex justify-start">
+    <div class="flex justify-start dark:bg-slate-700">
         <img src="../assets/youTubemaddowload.png" alt="Logo">
     </div>
 
-    <div class="flex justify-end">
-     
-    </div>
 </template>
 
 <script>

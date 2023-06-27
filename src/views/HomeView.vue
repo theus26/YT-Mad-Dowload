@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home ">
     <Header />
 
     <Menu />
@@ -8,10 +8,7 @@
 
     <Information />
     <InputSearch />
-    
-
-
-
+   
     <Footer />
   </div>
 </template>
@@ -24,8 +21,6 @@ import InputSearch from '@/components/InputSearch.vue';
 import Information from '@/components/Information.vue';
 import Menu from '@/components/Menu.vue';
 
-
-
 export default {
   name: 'HomeView',
   components: {
@@ -34,6 +29,7 @@ export default {
     InputSearch,
     Information,
     Menu,
-}
+},
+ 
 }
 </script>

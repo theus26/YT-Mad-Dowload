@@ -5,7 +5,7 @@
         :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
         class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
       </div>
-      <div class="w-1/6 ...">
+      <div class="w-1/6  ...">
         <button @click="GetVideoUrl"
         class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
         :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
@@ -17,24 +17,24 @@
 
   <Loading v-show="load" />
 
-  <div class="container mx-auto  w-full mb-8">
+  <div class="container mx-auto  w-full mb-8" >
     <div class="flex">
       <div class="w-1/2">
         <iframe :src="videoUrl" width="560" height="315" frameborder="0" allowfullscreen class="py-3 mb-1"></iframe>
-        <p v-show="textInformation" class="text-left py-2"><strong>Como Realizar o Dowload?</strong> <br> Clique nos três
+        <p v-show="textInformation" class="text-left py-2 dark:text-white  text-base font-medium tracking-tight"><strong>Como Realizar o Dowload?</strong> <br> Clique nos três
           pontinhos e aperte em baixar</p>
       </div>
 
       <div class="w-1.9">
-        <p class="py-3 mb-1 text-sm font-bold">{{ title }}</p>
+        <p class="py-3 mb-1 text-sm font-bold dark:text-white tracking-tight">{{ title }}</p>
 
-        <p class="py-3 mb-1 text-sm font-bold grid grid-cols-1" v-show="text">Deseja baixar?</p>
+        <p class="py-3 mb-1 text-sm font-bold grid grid-cols-1 dark:text-white tracking-tight" v-show="text">Deseja baixar?</p>
         <div class="flex justify-center gap-3" v-show="show">
 
           <div
             class="bg-cont flex justify-center align-baseline gap-2 rounded-md border-2 border-500 w-40 h-12 cursor-pointer ..."
             @click="VideoCont">
-            <p class="py-3 mb-1 text-sm font-extrabold">Video</p>
+            <p class="py-3 mb-1 text-sm font-extrabold ">Video</p>
             <span class="py-3" v-html="svgVideo"></span>
           </div>
 
@@ -200,7 +200,7 @@ export default {
 
 
       const RequestInfo = await GetVideoInfoUrl(this.Link)
-      this.load = true
+      
       if (RequestInfo.status === 200) {
 
         if (this.option == 'Mixed') {
@@ -234,10 +234,10 @@ export default {
 
           }
         }
-        this.load = false
+        
       }else{
         console.error("Error")
-        this.load = false
+        
       }
 
     },
@@ -250,4 +250,7 @@ export default {
 .selected {
   background-color: yellow;
 }
+
+ 
+
 </style>
