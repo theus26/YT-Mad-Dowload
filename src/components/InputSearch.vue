@@ -200,7 +200,7 @@ export default {
 
 
       const RequestInfo = await GetVideoInfoUrl(this.Link)
-      this.load = true
+      
       if (RequestInfo.status === 200) {
 
         if (this.option == 'Mixed') {
@@ -234,10 +234,10 @@ export default {
 
           }
         }
-        this.load = false
+       
       }else{
         console.error("Error")
-        this.load = false
+        
       }
 
     },
