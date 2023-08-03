@@ -2,18 +2,18 @@
   <div class="container mx-auto  w-full">
     <div class="flex ...">
       <div class="w-5/6 ..."><input v-model="Link" type="search"
-        :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
-        class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
+          :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
+          class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
       </div>
       <div class="w-1/6 ...">
         <button @click="GetVideoUrl"
-        class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
-        :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
-        <span class="icon" v-html="svgIcon"></span>
-      </button>
+          class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
+          :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
+          <span class="icon" v-html="svgIcon"></span>
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
   <Loading v-show="load" />
 
@@ -103,7 +103,7 @@ export default {
       objAudio: [],
       selectedItems: [],
       textInformation: false,
-      load:false,
+      load: false,
       show: false,
       text: false,
     };
@@ -116,11 +116,13 @@ export default {
       //Valida Url
       const regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
       const match = url.match(regex);
-      if (match){
+      if (match) {
         //Realizar a request
         const result = await GetVideoUrl(url)
 
         if (result.status === 200) {
+          //Limpar array para as opções não ficarem selecionadas
+          this.selectedItems.length = 0;
           this.videoUrl = url
           this.show = true
           this.text = true
@@ -145,20 +147,22 @@ export default {
         }
       }
       else {
-          this.$swal({
-            icon: 'error',
-            title: 'Oops...',
-            text: `Url ${this.Link}, Inválida, Tente Novamente!`
-          })
-          this.load = false
-        }
+        this.$swal({
+          icon: 'error',
+          title: 'Oops...',
+          text: `Url ${this.Link}, Inválida, Tente Novamente!`
+        })
+        this.load = false
+      }
     },
 
     VideoCont() {
       this.option = 'Mixed'
       const container = this.objVideo.map(cont => cont.container)
       const resolution = this.objVideo.map(res => res.resolution)
+      //console.log(this.objVideo)
       this.container = container.filter((i, index) => container.indexOf(i) === index)
+      console.log(container)
       this.resolution = resolution
 
     },
@@ -171,36 +175,45 @@ export default {
     },
 
     isSelected(item) {
-      
       return this.selectedItems.includes(item);
+
     },
     toggleSelection(item) {
       if (this.isSelected(item)) {
-       
+        console.log('Entrou');
         this.selectedItems = this.selectedItems.filter(i => i !== item);
+        console.log(this.selectedItems)
       } else {
-       
+        console.log('Entrou');
+        console.log(this.selectedItems)
         const b = this.selectedItems.push(item);
+        console.log(b)
       }
       const a = this.cont = this.selectedItems[0];
 
     },
 
     async toggleSelection1(item) {
-   
+
       if (this.isSelected(item)) {
+        console.log('Entrou');
         this.selectedItems = this.selectedItems.filter(i => i !== item);
+        console.log(this.selectedItems)
         this.load = false
       } else {
+        console.log('Entrou');
         this.selectedItems.push(item);
-        
+        console.log(this.selectedItems)
+
       }
 
       const b = this.res = this.selectedItems[1];
+      this.ModelarDados();
+    },
 
-
+    async ModelarDados() {
       const RequestInfo = await GetVideoInfoUrl(this.Link)
-      
+
       if (RequestInfo.status === 200) {
 
         if (this.option == 'Mixed') {
@@ -234,13 +247,11 @@ export default {
 
           }
         }
-       
-      }else{
-        console.error("Error")
-        
-      }
 
-    },
+      } else {
+        console.error("Error")
+      }
+    }
 
   },
 };
