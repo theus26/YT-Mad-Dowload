@@ -2,10 +2,10 @@ import axios from "axios"
 
 export const api = axios.create({
     //Produção
-    //baseURL:"https://ytmad.azurewebsites.net/",
-    
-    //Local
-    baseURL:"https://localhost:7275/"
+    baseURL:"https://ytmad.azurewebsites.net/",
+
+    // //Local
+    // baseURL:"https://localhost:7275/"
 })
 
 export const GetVideoUrl = async (url) =>{
