@@ -160,9 +160,7 @@ export default {
       this.option = 'Mixed'
       const container = this.objVideo.map(cont => cont.container)
       const resolution = this.objVideo.map(res => res.resolution)
-      //console.log(this.objVideo)
       this.container = container.filter((i, index) => container.indexOf(i) === index)
-      console.log(container)
       this.resolution = resolution
 
     },
@@ -180,34 +178,23 @@ export default {
     },
     toggleSelection(item) {
       if (this.isSelected(item)) {
-        console.log('Entrou');
         this.selectedItems = this.selectedItems.filter(i => i !== item);
-        console.log(this.selectedItems)
       } else {
-        console.log('Entrou');
-        console.log(this.selectedItems)
-        const b = this.selectedItems.push(item);
-        console.log(b)
+        this.selectedItems.push(item);
       }
-      const a = this.cont = this.selectedItems[0];
+      this.cont = this.selectedItems[0];
 
     },
 
     async toggleSelection1(item) {
 
       if (this.isSelected(item)) {
-        console.log('Entrou');
         this.selectedItems = this.selectedItems.filter(i => i !== item);
-        console.log(this.selectedItems)
         this.load = false
       } else {
-        console.log('Entrou');
         this.selectedItems.push(item);
-        console.log(this.selectedItems)
-
       }
-
-      const b = this.res = this.selectedItems[1];
+      this.res = this.selectedItems[1];
       this.ModelarDados();
     },
 
@@ -244,7 +231,6 @@ export default {
             const result = filterOptions[0].url
             this.videoUrl = result
             this.textInformation = true
-
           }
         }
 
