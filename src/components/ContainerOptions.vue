@@ -51,7 +51,7 @@
               <div class="flex justify-center gap-3">
                 <div v-for="(item, index) in container" :key="index"
                   class="p-4 bg-gray-200 cursor-pointer rounded hover:bg-gray-500"
-                  :class="{ 'selected': isSelected(item) }" @click="toggleSelection(item)">
+                  :class="{ 'selected': isSelected(item) }" @click="toggleSelectionContainer(item)">
                   {{ item }}
                 </div>
 
@@ -61,7 +61,7 @@
               <div class="flex gap-3">
                 <div v-for="(item, index) in resolution" :key="index"
                   class="p-4 bg-gray-200 cursor-pointer rounded  hover:bg-gray-500"
-                  :class="{ 'selected': isSelected(item) }" @click="toggleSelection1(item)">
+                  :class="{ 'selected': isSelected(item) }" @click="toggleSelectionResolution(item)">
                   {{ item }}p
                 </div>
               </div>
@@ -112,18 +112,18 @@ export default {
     async GetVideoUrl() {
       this.load = true
       //Alterar Url
-      const url = this.Link.replace("watch?v=", "embed/")
+      const alterUrl = this.Link.replace("watch?v=", "embed/")
       //Valida Url
       const regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
-      const match = url.match(regex);
+      const match = alterUrl.match(regex);
       if (match) {
         //Realizar a request
-        const result = await GetVideoUrl(url)
+        const result = await GetVideoUrl(alterUrl)
 
         if (result.status === 200) {
           //Limpar array para as opções não ficarem selecionadas
           this.selectedItems.length = 0;
-          this.videoUrl = url
+          this.videoUrl = alterUrl
           this.show = true
           this.text = true
           // Filtrar apenas os objetos do tipo "mixed"
@@ -158,25 +158,22 @@ export default {
 
     VideoCont() {
       this.option = 'Mixed'
-      const container = this.objVideo.map(cont => cont.container)
-      const resolution = this.objVideo.map(res => res.resolution)
-      this.container = container.filter((i, index) => container.indexOf(i) === index)
-      this.resolution = resolution
-
+      const containerMap = this.objVideo.map(cont => cont.container)
+      this.resolution = this.objVideo.map(res => res.resolution)
+      this.container = containerMap.filter((i, index) => containerMap.indexOf(i) === index)
     },
     AudioCont() {
       this.option = 'Audio'
-      const container = this.objAudio.map(cont => cont.container)
-      const bitRate = this.objAudio.map(bit => bit.bitrate)
-      this.container = container.filter((i, index) => container.indexOf(i) === index)
-      this.resolution = bitRate.slice(0, 3)
+      const containerMap = this.objAudio.map(cont => cont.container)
+      this.resolution = this.objAudio.map(bit => bit.bitrate).slice(0,3)
+      this.container = containerMap.filter((i, index) => containerMap.indexOf(i) === index)
     },
 
-    isSelected(item) {
+    isSelected (item) {
       return this.selectedItems.includes(item);
-
     },
-    toggleSelection(item) {
+
+    toggleSelectionContainer (item) {
       if (this.isSelected(item)) {
         this.selectedItems = this.selectedItems.filter(i => i !== item);
       } else {
@@ -186,8 +183,7 @@ export default {
 
     },
 
-    async toggleSelection1(item) {
-
+    async toggleSelectionResolution (item) {
       if (this.isSelected(item)) {
         this.selectedItems = this.selectedItems.filter(i => i !== item);
         this.load = false
@@ -198,27 +194,25 @@ export default {
       this.ModelarDados();
     },
 
-    async ModelarDados() {
+    async ModelData() {
       const RequestInfo = await GetVideoInfoUrl(this.Link)
-
       if (RequestInfo.status === 200) {
-
         if (this.option == 'Mixed') {
           const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Mixed' && inf.container === this.cont && inf.resolution === this.res)
-
           if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
             return this.$swal({
               icon: 'error',
               title: 'Oops...',
               text: `Opção Invalida, ${this.cont ? this.cont : ''}, para ${this.res ? this.res : 'essa opção'}p  tente outra`
             })
+
           } else {
             const result = filterOptions[0].url
             this.videoUrl = result
             this.textInformation = true
-
           }
         }
+
         else if (this.option == 'Audio') {
           const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Audio' && inf.container === this.cont && inf.bitrate === this.res)
           if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
@@ -235,10 +229,13 @@ export default {
         }
 
       } else {
-        console.error("Error")
+       this.$swal({
+        icon: 'error',
+        title: 'Ops',
+        text: 'Não foi possivel identificar essa URL'
+       })
       }
     }
-
   },
 };
 </script>

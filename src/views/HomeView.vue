@@ -7,7 +7,7 @@
     <br>
 
     <Information />
-    <InputSearch />
+    <ContainerOptions />
     
 
 
@@ -20,7 +20,7 @@
 // @ is an alias to /src
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
-import InputSearch from '@/components/InputSearch.vue';
+import ContainerOptions from '@/components/ContainerOptions.vue';
 import Information from '@/components/Information.vue';
 import Menu from '@/components/Menu.vue';
 
@@ -31,7 +31,7 @@ export default {
   components: {
     Header,
     Footer,
-    InputSearch,
+    ContainerOptions,
     Information,
     Menu,
 }
