@@ -1,74 +1,33 @@
 <template>
-  <div class="container mx-auto  w-full">
-    <div class="flex ...">
-      <div class="w-5/6 ..."><input v-model="Link" type="search"
-          :placeholder="`Digite sua pesquisa aqui, Ex: ${extraText}`"
-          class="border-2 border-indigo-500 rounded text-black-500 py-3 focus:outline-indigo-500 w-full placeholder:italic placeholder:text-slate-400 	" />
-      </div>
-      <div class="w-1/6 ...">
-        <button @click="GetVideoUrl"
-          class="bg-btn text-white py-3 px-14 px4 rounded font-bold focus:outline-none border-2 border-indigo-500"
-          :class="{ 'cursor-not-allowed': !Link, 'cursor-pointer': Link }" :disabled="!Link">
-          <span class="icon" v-html="svgIcon"></span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <Loading v-show="load" />
-
-  <div class="container mx-auto  w-full mb-8">
-    <div class="flex">
-      <div class="w-1/2">
-        <iframe :src="videoUrl" width="560" height="315" frameborder="0" allowfullscreen class="py-3 mb-1"></iframe>
-        <p v-show="textInformation" class="text-left py-2"><strong>Como Realizar o Dowload?</strong> <br> Clique nos três
-          pontinhos e aperte em baixar</p>
-      </div>
-
-      <div class="w-1.9">
-        <p class="py-3 mb-1 text-sm font-bold">{{ title }}</p>
-
-        <p class="py-3 mb-1 text-sm font-bold grid grid-cols-1" v-show="text">Deseja baixar?</p>
-        <div class="flex justify-center gap-3" v-show="show">
-
-          <div
-            class="bg-cont flex justify-center align-baseline gap-2 rounded-md border-2 border-500 w-40 h-12 cursor-pointer ..."
-            @click="VideoCont">
-            <p class="py-3 mb-1 text-sm font-extrabold">Video</p>
-            <span class="py-3" v-html="svgVideo"></span>
-          </div>
-
-          <div
-            class="bg-aud flex justify-center align-baseline gap-2 rounded-md border-2 border-500 w-40 h-12 cursor-pointer ..."
-            @click="AudioCont">
-            <p class="py-3 mb-1 text-sm font-extrabold">Audio</p>
-            <span class="py-3" v-html="svgAudio"></span>
-          </div>
+  <div class="container mx-auto w-full">
+    <SearchBar
+      :extraText="extraText"
+      :svgIcon="svgIcon"
+      @search="getVideoUrl"
+    />
+    <Loading v-show="load" />
+    <div class="container mx-auto w-full mb-8">
+      <div class="flex">
+        <div class="w-1/2">
+          <VideoPlayer
+            :videoUrl="videoUrl"
+            :showInstructions="textInformation"
+          />
         </div>
-        <div class="flex w-1.9 justify-center gap-3 py-3">
-          <div class="grid grid-cols-1 gap-3">
-            <div class="grid grid-rows-1">
-              <div class="flex justify-center gap-3">
-                <div v-for="(item, index) in container" :key="index"
-                  class="p-4 bg-gray-200 cursor-pointer rounded hover:bg-gray-500"
-                  :class="{ 'selected': isSelected(item) }" @click="toggleSelectionContainer(item)">
-                  {{ item }}
-                </div>
-
-              </div>
-            </div>
-            <div class="grid grid-rows-1">
-              <div class="flex gap-3">
-                <div v-for="(item, index) in resolution" :key="index"
-                  class="p-4 bg-gray-200 cursor-pointer rounded  hover:bg-gray-500"
-                  :class="{ 'selected': isSelected(item) }" @click="toggleSelectionResolution(item)">
-                  {{ item }}p
-                </div>
-              </div>
-            </div>
-
-
-          </div>
+        <div class="w-1.9">
+          <VideoOptions
+            :title="title"
+            :text="text"
+            :show="show"
+            :svgVideo="svgVideo"
+            :svgAudio="svgAudio"
+            :container="container"
+            :resolution="resolution"
+            :selectedItems="selectedItems"
+            @video-selected="videoCont"
+            @audio-selected="audioCont"
+            @toggle-selection="toggleSelection"
+          />
         </div>
       </div>
     </div>
@@ -76,32 +35,39 @@
 </template>
 
 <script>
-import { GetVideoUrl } from '@/services/api';
-import { GetVideoInfoUrl } from '@/services/api';
-import Loading from '@/components/shared/Loading.vue'
+import SearchBar from "@/components/SearchBar.vue";
+import VideoPlayer from "@/components/VideoPlayer.vue";
+import VideoOptions from "@/components/VideoOptions.vue";
+import Loading from "@/components/shared/Loading.vue";
+import { GetVideoUrl, GetVideoInfoUrl } from "@/services/api";
+
 export default {
   components: {
-    Loading
+    SearchBar,
+    VideoPlayer,
+    VideoOptions,
+    Loading,
   },
   data() {
     return {
-      Link: "",
-      title: '',
-      cont: '',
-      videoUrl: '',
-      option: '',
-      res: '',
-      placeholderText: "Cole o Link do seu video aqui!",
+      linkForSearch: "",
+      title: "",
+      cont: "",
+      videoUrl: "",
+      option: "",
+      res: "",
       extraText: "https://www.youtube.com/watch?v=gNBKvpAPMUI&list",
-      svgIcon: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z\" /></svg>",
-      svgVideo: "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\" class=\"w-6 h-6\"><path stroke-linecap=\"round\" d=\"M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z\" /></svg>",
-      svgAudio: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"\ /></svg>',
-      obj: [],
-      objVideo: [],
+      svgIcon:
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>',
+      svgVideo:
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg>',
+      svgAudio:
+        '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"\ /></svg>',
       container: [],
       resolution: [],
-      objAudio: [],
       selectedItems: [],
+      objVideo: [],
+      objAudio: [],
       textInformation: false,
       load: false,
       show: false,
@@ -109,133 +75,112 @@ export default {
     };
   },
   methods: {
-    async GetVideoUrl() {
-      this.load = true
-      //Alterar Url
-      const alterUrl = this.Link.replace("watch?v=", "embed/")
-      //Valida Url
-      const regex = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
-      const match = alterUrl.match(regex);
+    async getVideoUrl(link) {
+      this.load = true;
+      this.linkForSearch = link.replace("watch?v=", "embed/");
+      const regex =
+        /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})$/;
+      const match = this.linkForSearch.match(regex);
       if (match) {
-        //Realizar a request
-        const result = await GetVideoUrl(alterUrl)
-
+        const result = await GetVideoUrl(this.linkForSearch);
         if (result.status === 200) {
-          //Limpar array para as opções não ficarem selecionadas
-          this.selectedItems.length = 0;
-          this.videoUrl = alterUrl
-          this.show = true
-          this.text = true
-          // Filtrar apenas os objetos do tipo "mixed"
-          const objMixed = this.obj = result.data.quality.filter(mixed => mixed.type === 'Mixed');
-          this.objVideo = objMixed
-          // Filtrar apenas os objetos do tipo "audio"
-          const objAudios = this.obj = result.data.quality.filter(mixaudio => mixaudio.type === 'Audio');
-          this.objAudio = objAudios
-          const arr = result.data;
-          //Receber Titulo do video
-          this.title = arr.title;
-          this.load = false
-        }
-        else {
-          this.$swal({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Não Foi possivel'
-          })
-          this.load = false
-        }
-      }
-      else {
-        this.$swal({
-          icon: 'error',
-          title: 'Oops...',
-          text: `Url ${this.Link}, Inválida, Tente Novamente!`
-        })
-        this.load = false
-      }
-    },
+          this.loadProps(this.linkForSearch);
 
-    VideoCont() {
-      this.option = 'Mixed'
-      const containerMap = this.objVideo.map(cont => cont.container)
-      this.resolution = this.objVideo.map(res => res.resolution)
-      this.container = containerMap.filter((i, index) => containerMap.indexOf(i) === index)
-    },
-    AudioCont() {
-      this.option = 'Audio'
-      const containerMap = this.objAudio.map(cont => cont.container)
-      this.resolution = this.objAudio.map(bit => bit.bitrate).slice(0,3)
-      this.container = containerMap.filter((i, index) => containerMap.indexOf(i) === index)
-    },
+          this.objVideo = result.data.quality.filter(
+            (mixed) => mixed.type === "Mixed"
+          );
 
-    isSelected (item) {
+          this.objAudio = result.data.quality.filter(
+            (mixaudio) => mixaudio.type === "Audio"
+          );
+
+          this.getUniqueContainers(this.objVideo, this.objAudio);
+          this.title = result.data.title;
+        } else {
+          this.showError("Não Foi possivel");
+        }
+      } else {
+        this.showError(`Url ${link}, Inválida, Tente Novamente!`);
+      }
+      this.load = false;
+    },
+    getUniqueContainers(objMixed, objAudio) {
+      return [
+        ...new Set([...objMixed, ...objAudio].map((item) => item.container)),
+      ];
+    },
+    loadProps(linkForSearch) {
+      this.selectedItems.length = 0;
+      this.videoUrl = linkForSearch;
+      this.show = true;
+      this.text = true;
+    },
+    videoCont() {
+      this.option = "Mixed";
+      this.container = this.getUniqueContainers(this.objVideo, []);
+      this.resolution = this.objVideo.map((res) => res.resolution);
+    },
+    audioCont() {
+      this.option = "Audio";
+      this.container = this.getUniqueContainers([], this.objAudio);
+      this.resolution = this.objAudio.map((bit) => bit.bitrate).slice(0, 3);
+    },
+    toggleSelection(item) {
+      if (this.isSelected(item)) {
+        console.log("aqui");
+        console.log(this.selectedItems);
+        this.selectedItems = this.selectedItems.filter((i) => i !== item);
+      } else {
+        this.selectedItems.push(item);
+      }
+      if (this.option === "Mixed") {
+        this.cont = this.selectedItems[0];
+        this.res = this.selectedItems[1];
+      } else {
+        this.cont = this.selectedItems[0];
+        this.res = this.selectedItems[1];
+      }
+      this.modelData();
+    },
+    isSelected(item) {
       return this.selectedItems.includes(item);
     },
-
-    toggleSelectionContainer (item) {
-      if (this.isSelected(item)) {
-        this.selectedItems = this.selectedItems.filter(i => i !== item);
-      } else {
-        this.selectedItems.push(item);
-      }
-      this.cont = this.selectedItems[0];
-
-    },
-
-    async toggleSelectionResolution (item) {
-      if (this.isSelected(item)) {
-        this.selectedItems = this.selectedItems.filter(i => i !== item);
-        this.load = false
-      } else {
-        this.selectedItems.push(item);
-      }
-      this.res = this.selectedItems[1];
-      this.ModelarDados();
-    },
-
-    async ModelData() {
-      const RequestInfo = await GetVideoInfoUrl(this.Link)
-      if (RequestInfo.status === 200) {
-        if (this.option == 'Mixed') {
-          const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Mixed' && inf.container === this.cont && inf.resolution === this.res)
-          if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
-            return this.$swal({
-              icon: 'error',
-              title: 'Oops...',
-              text: `Opção Invalida, ${this.cont ? this.cont : ''}, para ${this.res ? this.res : 'essa opção'}p  tente outra`
-            })
-
-          } else {
-            const result = filterOptions[0].url
-            this.videoUrl = result
-            this.textInformation = true
-          }
+    async modelData() {
+      const requestInfo = await GetVideoInfoUrl(this.linkForSearch);
+      if (requestInfo.status === 200) {
+        const filterOptions = requestInfo.data.quality.filter(
+          (inf) =>
+            inf.type === this.option &&
+            inf.container === this.cont &&
+            (this.option === "Mixed"
+              ? inf.resolution === this.res
+              : inf.bitrate === this.res)
+        );
+        if (filterOptions.length === 0) {
+          this.showError(
+            `Opção Invalida, ${this.cont ? this.cont : ""}, para ${
+              this.res ? this.res : "essa opção"
+            }  tente outra`
+          );
+          (this.resolution = []),
+            (this.container = []),
+            (this.selectedItems.length = 0);
+        } else {
+          this.videoUrl = filterOptions[0].url;
+          this.textInformation = true;
         }
-
-        else if (this.option == 'Audio') {
-          const filterOptions = RequestInfo.data.quality.filter(inf => inf.type === 'Audio' && inf.container === this.cont && inf.bitrate === this.res)
-          if (filterOptions == [] || filterOptions == undefined || filterOptions == '') {
-            return this.$swal({
-              icon: 'error',
-              title: 'Oops...',
-              text: `Opção Invalida, ${this.cont ? this.cont : ''}, para ${this.res ? this.res : 'essa opção'}  tente outra`
-            })
-          } else {
-            const result = filterOptions[0].url
-            this.videoUrl = result
-            this.textInformation = true
-          }
-        }
-
       } else {
-       this.$swal({
-        icon: 'error',
-        title: 'Ops',
-        text: 'Não foi possivel identificar essa URL'
-       })
+        this.showError("Não foi possivel identificar essa URL");
       }
-    }
+    },
+    showError(message) {
+      this.$swal({
+        icon: "error",
+        title: "Oops...",
+        text: message,
+      });
+      this.load = false;
+    },
   },
 };
 </script>
