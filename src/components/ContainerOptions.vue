@@ -127,8 +127,6 @@ export default {
     },
     toggleSelection(item) {
       if (this.isSelected(item)) {
-        console.log("aqui");
-        console.log(this.selectedItems);
         this.selectedItems = this.selectedItems.filter((i) => i !== item);
       } else {
         this.selectedItems.push(item);
@@ -146,31 +144,34 @@ export default {
       return this.selectedItems.includes(item);
     },
     async modelData() {
-      const requestInfo = await GetVideoInfoUrl(this.linkForSearch);
-      if (requestInfo.status === 200) {
-        const filterOptions = requestInfo.data.quality.filter(
-          (inf) =>
-            inf.type === this.option &&
-            inf.container === this.cont &&
-            (this.option === "Mixed"
-              ? inf.resolution === this.res
-              : inf.bitrate === this.res)
-        );
-        if (filterOptions.length === 0) {
-          this.showError(
-            `Opção Invalida, ${this.cont ? this.cont : ""}, para ${
-              this.res ? this.res : "essa opção"
-            }  tente outra`
+      if (this.cont && this.res != undefined) {
+        const requestInfo = await GetVideoInfoUrl(this.linkForSearch);
+        if (requestInfo.status === 200) {
+          const filterOptions = requestInfo.data.quality.filter(
+            (inf) =>
+              inf.type === this.option &&
+              inf.container === this.cont &&
+              (this.option === "Mixed"
+                ? inf.resolution === this.res
+                : inf.bitrate === this.res)
           );
-          (this.resolution = []),
-            (this.container = []),
-            (this.selectedItems.length = 0);
+
+          if (filterOptions.length === 0) {
+            this.showError(
+              `Opção Invalida, ${this.cont ? this.cont : ""}, para ${
+                this.res ? this.res : "essa opção"
+              }  tente outra`
+            );
+            (this.resolution = []),
+              (this.container = []),
+              (this.selectedItems.length = 0);
+          } else {
+            this.videoUrl = filterOptions[0].url;
+            this.textInformation = true;
+          }
         } else {
-          this.videoUrl = filterOptions[0].url;
-          this.textInformation = true;
+          this.showError("Não foi possivel identificar essa URL");
         }
-      } else {
-        this.showError("Não foi possivel identificar essa URL");
       }
     },
     showError(message) {
